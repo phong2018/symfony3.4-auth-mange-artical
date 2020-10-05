@@ -1,3 +1,7 @@
+{% extends '@App/layout.html.twig' %}
+
+{% block content %}
+
 {# app/Resources/views/registration/register.html.twig #}
 {{ form_start(form) }}
     {{ form_row(form.username) }}
@@ -7,3 +11,4 @@
 
     <button type="submit">Register!</button>
 {{ form_end(form) }}
+{% endblock %}

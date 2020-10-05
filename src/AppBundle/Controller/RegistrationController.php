@@ -18,6 +18,7 @@ class RegistrationController extends Controller
     {
         // 1) build the form
         $user = new User();
+        // lấy form ở ddaay
         $form = $this->createForm(UserType::class, $user);
 
         // 2) handle the submit (will only happen on POST)
@@ -39,9 +40,6 @@ class RegistrationController extends Controller
             return $this->redirectToRoute('replace_with_some_route');
         }
 
-        return $this->render(
-            'registration/register.html.twig',
-            ['form' => $form->createView()]
-        );
+        return $this->render('registration/register.html.twig',['form' => $form->createView()]);
     }
 }
