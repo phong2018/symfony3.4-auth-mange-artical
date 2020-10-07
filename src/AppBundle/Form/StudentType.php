@@ -33,7 +33,7 @@ class StudentType extends AbstractType
                 'mapped' => false,
                 'label' => 'Photo (png, jpeg)'
             ]) 
-            ->add('firstname', TextType::class)
+            ->add('firstname', TextType::class, ['attr' => ['class' => 'myClass', 'id'=>'plgid']])
             ->add('lastname', TextType::class)
             
             ->add('save', SubmitType::class, array('label' => 'Submit')) 

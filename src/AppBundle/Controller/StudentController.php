@@ -3,15 +3,13 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Student; 
 use AppBundle\Form\StudentType;
-use AppBundle\Form\FormValidationType; 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller; 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route; 
 
 use Symfony\Component\HttpFoundation\Request; 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\Extension\Core\Type\TextType; 
-use Symfony\Component\Form\Extension\Core\Type\FileType; 
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;  
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 
 
 class StudentController extends Controller {    
@@ -111,5 +109,28 @@ class StudentController extends Controller {
       ->getRepository('AppBundle:Student') 
       ->findAll();
       return $this->render('@App/student/display.html.twig', array('data' => $stud)); 
-   }      
+   }   
+   /** 
+   * @Route("/student/ajax") 
+    */ 
+    public function ajaxAction(Request $request) {  
+       $students = $this->getDoctrine() 
+          ->getRepository('AppBundle:Student') 
+          ->findAll();  
+          
+       if ($request->isXmlHttpRequest() || $request->query->get('showJson') == 1) {  
+          $jsonData = array();  
+          $idx = 0;  
+          foreach($students as $student) {  
+             $temp = array(
+                'name' => $student->getName(),  
+                'age' => $student->getAge(),  
+             );   
+             $jsonData[$idx++] = $temp;  
+          } 
+          return new JsonResponse($jsonData); 
+       } else { 
+          return $this->render('@App/student/ajax.html.twig'); 
+       } 
+    }      
 }  
