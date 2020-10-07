@@ -53,7 +53,8 @@ class TeacherController extends Controller {
                'No Teacher found for id '.$id
            );
        }
-        $form = $this->createForm(TeacherType::class, $teacher);
+       
+       $form = $this->createForm(TeacherType::class, $teacher);
 
        $form->handleRequest($request);
 

@@ -29,7 +29,10 @@ class StudentType extends AbstractType
         $builder 
             ->add('age', NumberType::class)
             ->add('name', TextType::class)
-            ->add('photo', FileType::class, array('label' => 'Photo (png, jpeg)')) 
+            ->add('photo', FileType::class, [
+                'mapped' => false,
+                'label' => 'Photo (png, jpeg)'
+            ]) 
             ->add('firstname', TextType::class)
             ->add('lastname', TextType::class)
             

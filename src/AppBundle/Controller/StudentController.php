@@ -25,13 +25,17 @@ class StudentController extends Controller {
       $form->handleRequest($request);
 
       if ($form->isSubmitted() && $form->isValid()) { 
-         // xử lý file
-         $file = $student->getPhoto(); 
-         $fileName = md5(uniqid()).'.'.$file->guessExtension(); 
-         $file->move($this->getParameter('photos_directory'), $fileName); 
+        /** @var UploadedFile $uploadedFile */
+        $uploadedFile = $form['photo']->getData();
+        if ($uploadedFile) {
+            $destination = $this->getParameter('photos_directory');
+            $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $newFilename =  md5(uniqid()).'.'.$uploadedFile->guessExtension(); 
+            $uploadedFile->move($destination,$newFilename);
+        }
          //-----cập nhật dữ liệu student
          $student = $form->getData(); 
-         $student->setPhoto($this->getParameter('photos_directory').$fileName);
+         $student->setPhoto($this->getParameter('photos_directory').$newFilename);
          //------
          $em = $this->getDoctrine()->getManager();
          $em->persist($student);
@@ -44,18 +48,19 @@ class StudentController extends Controller {
             'form' => $form->createView(), 
          )); 
       } 
-   }
+    }
+
    /**
-     * @Route("/student/update_form/{id}", name="student_update_form")
+     * @Route("/student/update/{id}", name="student_update_form")
      * @param Request $request
      * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
      */
-    public function update_formAction(Request $request, $id){
+    public function update(Request $request, $id){
 
        $entityManager = $this->getDoctrine()->getManager();
        $student = $entityManager->getRepository(Student::class)->findOneById($id);
 
-  
+      
 
        if (!$student) {
            throw $this->createNotFoundException(
@@ -63,40 +68,40 @@ class StudentController extends Controller {
            );
        }
 
-     
+       // nếu đề photo thì lúc mapped sẽ bị lỗi
+       // vì photo trong teacherDB là chuỗi, photo trong form là file nên map bị lỗi
+       $form = $this->createForm(StudentType::class, $student);
+       $form->handleRequest($request);
 
-       $form = $this->createForm(StudentType::class, (array) $student );
+        if ($form->isSubmitted() && $form->isValid()) { 
+          /** @var UploadedFile $uploadedFile */
+          $uploadedFile = $form['photo']->getData();
+          if ($uploadedFile) {
+              $destination = $this->getParameter('photos_directory');
+              $originalFilename = pathinfo($uploadedFile->getClientOriginalName(), PATHINFO_FILENAME);
+              $newFilename =  md5(uniqid()).'.'.$uploadedFile->guessExtension(); 
+              $uploadedFile->move($destination,$newFilename);
+          }
+           //-----cập nhật dữ liệu student
+           $student = $form->getData(); 
+           $student->setPhoto($this->getParameter('photos_directory').$newFilename);
+           //------
+           $em = $this->getDoctrine()->getManager();
+           $em->persist($student);
+           $em->flush(); 
 
-         echo $student->getName();
-       die;
+           return new Response("User photo is successfully uploaded."); 
+        } else { 
+       
+           return $this->render('@App/student/new.html.twig', array( 
+              'form' => $form->createView(), 
+           )); 
+        } 
 
-       $student->setName('New student name11!');
-       $entityManager->flush();
-
-       return $this->redirectToRoute('homepage');
+      
    }
  
-    /**
-     * @Route("/student/update/{id}", name="student_update")
-     * @param Request $request
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
-     */
-    public function updateAction(Request $request, $id){
-
-       $entityManager = $this->getDoctrine()->getManager();
-       $student = $entityManager->getRepository(Student::class)->find($id);
-
-       if (!$student) {
-           throw $this->createNotFoundException(
-               'No student found for id '.$id
-           );
-       }
-
-       $student->setName('New student name!');
-       $entityManager->flush();
-
-       return $this->redirectToRoute('homepage');
-   }
+    
     
    /** 
    * @Route("/student/display", name="student_list") 
