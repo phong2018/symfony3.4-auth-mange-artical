@@ -1,0 +1,23 @@
+<style> 
+   .table { border-collapse: collapse; } 
+   .table th, td { 
+      border-bottom: 1px solid #ddd; 
+      width: 250px; 
+      text-align: left; 
+      align: left; 
+   } 
+</style> 
+
+<h2>Students database application!</h2>  
+<table class = "table">  
+   <tr>  
+      <th>Name</th>  
+      <th>Age</th>  
+   </tr>  
+   {% for x in data %} 
+   <tr>  
+      <td>{{ x.name }}</td>   
+      <td>{{ x.age }}</td>   
+   </tr>  
+   {% endfor %} 
+</table> 

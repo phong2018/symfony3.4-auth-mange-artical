@@ -85,6 +85,7 @@ class ArticlesController extends Controller
     public function editAction(Request $request, $id)
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Unable to access this page!');
+
         $article = $this->getDoctrine()
             ->getRepository(Article::class)
             ->findOneById($id);
@@ -100,11 +101,12 @@ class ArticlesController extends Controller
         }
 
         $form = $this->createForm(ArticleType::class, $article);
+        
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->flush();
+            
+     
 
             $this->addFlash(
                 'notice',
