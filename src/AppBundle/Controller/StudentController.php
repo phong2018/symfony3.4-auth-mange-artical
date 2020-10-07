@@ -45,25 +45,61 @@ class StudentController extends Controller {
          )); 
       } 
    }
-    /** 
-   * @Route("/student/update/{id}") 
-   */ 
-   public function updateAction($id) { 
-      $doct = $this->getDoctrine()->getManager(); 
-      $stud = $doct->getRepository('AppBundle:Student')->find($id);  
-      
-      if (!$stud) { 
-         throw $this->createNotFoundException( 
-            'No student found for id '.$id 
-         ); 
-      } 
-      $stud->setAddress('7 south street'); 
-      $doct->flush(); 
-      
-      return new Response('Changes updated!'); 
+   /**
+     * @Route("/student/update_form/{id}", name="student_update_form")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function update_formAction(Request $request, $id){
+
+       $entityManager = $this->getDoctrine()->getManager();
+       $student = $entityManager->getRepository(Student::class)->findOneById($id);
+
+  
+
+       if (!$student) {
+           throw $this->createNotFoundException(
+               'No student found for id '.$id
+           );
+       }
+
+     
+
+       $form = $this->createForm(StudentType::class, (array) $student );
+
+         echo $student->getName();
+       die;
+
+       $student->setName('New student name11!');
+       $entityManager->flush();
+
+       return $this->redirectToRoute('homepage');
    }
+ 
+    /**
+     * @Route("/student/update/{id}", name="student_update")
+     * @param Request $request
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse|Response
+     */
+    public function updateAction(Request $request, $id){
+
+       $entityManager = $this->getDoctrine()->getManager();
+       $student = $entityManager->getRepository(Student::class)->find($id);
+
+       if (!$student) {
+           throw $this->createNotFoundException(
+               'No student found for id '.$id
+           );
+       }
+
+       $student->setName('New student name!');
+       $entityManager->flush();
+
+       return $this->redirectToRoute('homepage');
+   }
+    
    /** 
-   * @Route("/student/display") 
+   * @Route("/student/display", name="student_list") 
    */ 
    public function displayAction() { 
       $stud = $this->getDoctrine() 
